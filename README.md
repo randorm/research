@@ -41,7 +41,7 @@ This node represents a Randorm user.
 
 #### Example
 
-```json
+```jsonc
 {
   "id": 42,
   "created_at": "2023-07-24T16:30:45.357Z",
@@ -49,17 +49,23 @@ This node represents a Randorm user.
   "subscriber_count": 14,
   "subscriber_ids": [
     169,
-    ...
+    65,
+    120
+    // ...
   ],
   "subscription_count": 4,
   "subscription_ids": [
     169,
-    ...
+    65,
+    120
+    // ...
   ],
   "viewed_count": 4,
   "viewed_ids": [
     169,
-    ...
+    65,
+    120
+    // ...
   ],
   "views": 59,
   "roommate_ids": [
