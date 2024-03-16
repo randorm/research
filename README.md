@@ -25,7 +25,7 @@ This node represents a Randorm user.
 | ------------------ | ---------------- | -------- | ---------------------------------------------------------------------------------------------------------------------- |
 | created_at         | String           | Yes      |                                                                                                                        |
 | id                 | Integer          | Yes      | Unique participant identifier.                                                                                         |
-| created_at         | String           | Yes      | Date and time the user was created. [ISO 8601](https://ru.wikipedia.org/wiki/ISO_8601) format.                         |
+| created_at         | Integer          | Yes      | Date the user was registered. The date is in `"days until deadline"` format.                                           |
 | gender             | String           | Yes      | User gender. Can be either `male` or `female`.                                                                         |
 | subscriber_count   | Integer          | Yes      | Number of subscribers. **Note** that the value may be higher than the number of identifiers in _subscriber_ids_.       |
 | subscriber_ids     | Array of Integer | Yes      | Set of unique subscriber identifiers. **Note** that only users who meet the distribution requirements are presented.   |
@@ -44,7 +44,7 @@ This node represents a Randorm user.
 ```jsonc
 {
   "id": 42,
-  "created_at": "2023-07-24T16:30:45.357Z",
+  "created_at": 12,
   "gender": "male",
   "subscriber_count": 14,
   "subscriber_ids": [
