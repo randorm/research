@@ -1,0 +1,116 @@
+[
+  {
+    "id": 1,
+    "question": "Order is important to you?",
+    "options": [
+      "Order is a saint thing",
+      "Order isn't the most important thing in life",
+      "I can adapt to any conditions"
+    ]
+  },
+  {
+    "id": 2,
+    "question": "Most of the time I'd like to spend...",
+    "options": [
+      "In privacy, I value personal space where no one is disturbing me",
+      "With friends, I like to be in the company",
+      "Depends on mood, I like to be alone and in company"
+    ]
+  },
+  {
+    "id": 3,
+    "question": "I'd like a roommate...",
+    "options": [
+      "Similar to my preferences",
+      "Opposite to my preferences"
+    ]
+  },
+  {
+    "id": 4,
+    "question": "Do you drink alcohol?",
+    "options": [
+      "Yes",
+      "Rarely",
+      "No"
+    ]
+  },
+  {
+    "id": 5,
+    "question": "Nutritional habits",
+    "options": [
+      "I cook by myself",
+      "I'll be ordering take-outs",
+      "I'll go to the canteen"
+    ]
+  },
+  {
+    "id": 6,
+    "question": "Native language",
+    "options": [
+      "Russian",
+      "English",
+      "Other"
+    ]
+  },
+  {
+    "id": 7,
+    "question": "How do you feel about sharing things and food?",
+    "options": [
+      "Negative, I will only cook for myself",
+      "Positive, ready to buy food and cook together",
+      "Doesn't matter, negotiable"
+    ]
+  },
+  {
+    "id": 8,
+    "question": "Sociability",
+    "options": [
+      "Talking all the time",
+      "Depends on the mood",
+      "Talking is not for me"
+    ]
+  },
+  {
+    "id": 9,
+    "question": "Lark or owl?",
+    "options": [
+      "Lark",
+      "Owl"
+    ]
+  },
+  {
+    "id": 10,
+    "question": "Do you smoke?",
+    "options": [
+      "Yes",
+      "Rarely",
+      "No"
+    ]
+  },
+  {
+    "id": 11,
+    "question": "How do you feel about noise?",
+    "options": [
+      "Good, I like to listen to loud music and talk loudly",
+      "Neutral, I can live in any conditions",
+      "I don't like noise, I try to be in quiet most of the time"
+    ]
+  },
+  {
+    "id": 12,
+    "question": "I'd like a roommate...",
+    "options": [
+      "Who speaks russian",
+      "A foreigner speaker"
+    ]
+  },
+  {
+    "id": 13,
+    "question": "Comfortable temperature",
+    "options": [
+      "I like it cool, air it out a lot",
+      "I like the warmth and fresh air",
+      "The warmer the better"
+    ]
+  }
+]
