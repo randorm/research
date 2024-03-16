@@ -93,7 +93,7 @@ This node represents a single-choice question.
 
 #### Example
 
-```json
+```jsonc
 {
   "id": 3,
   "question": "I'd like a roommate...",
@@ -121,7 +121,7 @@ This node represents a participant's answer to a single-choice question.
 
 #### Example
 
-```json
+```jsonc
 {
   "field_id": 3,
   "respondent_id": 42,
