@@ -81,11 +81,11 @@ This node represents a single-choice question.
 
 #### Model
 
-| Field    | Type    | Required | Description               |
-| -------- | ------- | -------- | ------------------------- |
-| id       | Integer | Yes      | Unique field identifier.  |
-| question | String  | Yes      | Question.                 |
-| options  | Array   | Yes      | Set of options to choose. |
+| Field    | Type            | Required | Description               |
+| -------- | --------------- | -------- | ------------------------- |
+| id       | Integer         | Yes      | Unique field identifier.  |
+| question | String          | Yes      | Question.                 |
+| options  | Array of String | Yes      | Set of options to choose. |
 
 > **Note** that you are only given single-choice questions. No text or
 > multiple-choice questions are provided.
