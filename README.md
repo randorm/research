@@ -3,9 +3,9 @@
 In preparation for the check-in of
 [Innopolis University](https://innopolis.university/) applicants at
 [InnoBootCamp 2023](https://t.me/universityinnopolis/885), we collected a data
-graph showing the relationship between participants, questions, and answers. We
-have also included the result of the applicant distribution by room in this
-graph.
+graph showing the relationship between participants, their answers to the
+questions from the feed. We have also included the result of the applicant
+distribution by room in this graph.
 
 The graph is presented as three files:
 
@@ -23,7 +23,6 @@ This node represents a Randorm user.
 
 | Field              | Type             | Required | Description                                                                                                            |
 | ------------------ | ---------------- | -------- | ---------------------------------------------------------------------------------------------------------------------- |
-| created_at         | String           | Yes      |                                                                                                                        |
 | id                 | Integer          | Yes      | Unique participant identifier.                                                                                         |
 | created_at         | Integer          | Yes      | Date the user was registered. The date is in `"days until deadline"` format.                                           |
 | gender             | String           | Yes      | User gender. Can be either `male` or `female`.                                                                         |
