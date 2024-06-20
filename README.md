@@ -127,3 +127,10 @@ This node represents a participant's answer to a single-choice question.
   "option": 0
 }
 ```
+
+### Git LFS
+
+This repository is using Git LFS (Git Large File Storage) system.
+Make sure you have installed the corresponding extension to your git enviroment.
+[Installation Guide](https://git-lfs.com/)
+ 
