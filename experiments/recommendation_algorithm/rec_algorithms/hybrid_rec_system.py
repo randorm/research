@@ -1,9 +1,7 @@
 import enum
-import os
 
 import faiss
 import numpy as np
-import pandas as pd
 from rec_services.dataset import Dataset
 
 from rec_services.graph import Graph
@@ -12,11 +10,21 @@ from sklearn.preprocessing import normalize
 
 
 class StatusKind(enum.Enum):
+    """StatusKind enum class that holds the status of the users' flow now."""
+
     COMMON = 1
     FRIEND = 2
 
 
-class RecommendationSystem:
+class HybridRecommendationSystem:
+    """Recommendation system class that handles the recommendation process.
+
+    Args:
+        :param user: User object
+        :param dataset: Dataset object
+
+    """
+
     status = StatusKind.COMMON
 
     def __init__(self, user: User, dataset: Dataset):
@@ -26,9 +34,9 @@ class RecommendationSystem:
         self.answers_pivot = dataset.answers_pivot
         self.working_answers = dataset.answers_pivot.drop(self.user.black_list)
 
-        self.working_graph = Graph(self.participants)
+        self.working_graph = Graph(self.participants, dataset.nan_responses)
 
-        self.index = faiss.IndexFlatL2(self.answers_pivot.shape[1])
+        self.index = faiss.IndexFlatL2(self.working_answers.shape[1])
         self.index.add(
             np.ascontiguousarray(
                 normalize(self.working_answers.values).astype(np.float32)
@@ -39,12 +47,13 @@ class RecommendationSystem:
         self.custom_to_contiguous = dataset.custom_to_contiguous_index()
 
     def create_faiss_index(self) -> None:
+        """Creates a new faiss index and adds the normalized data to it."""
         self.index = faiss.IndexFlatL2(self.working_answers.shape[1])
         normalized_data = normalize(self.working_answers.values).astype(np.float32)
         self.index.add(np.ascontiguousarray(normalized_data))
 
     def update_faiss_index(self) -> None:
-
+        """Updates the faiss index by removing blacklisted users."""
         self.working_answers = self.answers_pivot.drop(self.user.black_list)
         self.contiguous_to_custom = {
             i: j for i, j in enumerate(self.working_answers.index)
@@ -56,57 +65,71 @@ class RecommendationSystem:
         self.create_faiss_index()
 
     def process_user_recommendations(self) -> None:
+        """Processes the user recommendations.
+
+        The function gets similar users and asks the user if they want to be friends.
+           If the user says yes, the function adds the user to the graph and the checked list.
+           If the user says no, the function adds the user to the blacklist and updates the faiss index.
+        When algorithm shows 10 users for recommendations, it recommends the similar users from the first neighbor.
+
+        After the recommendation process is finished, the function restarts the recommendation process.
+        As a result, the recommendation process is infinite.
+        """
 
         similar_users = self.user.get_similar_users(
             self.index, self.contiguous_to_custom, 11
         )
-        neighbor_users = self.working_graph.get_n_neighbors(self.user.id, 11)
 
-        while self.working_answers.shape[0] - 2 != len(neighbor_users):
+        while self.working_answers.shape[0] != len(self.user.checked) - 1:
+            neighbor_users = self.working_graph.get_n_neighbors(self.user.id, 11)
 
-            if len(similar_users) == 0 and self.status == StatusKind.COMMON:
-                neighbor_users = self.working_graph.get_n_neighbors(self.user.id, 11)
+            if (
+                len(similar_users) == 0 and self.status == StatusKind.COMMON
+            ):  # check if similar users are empty for the common user
 
-                if len(neighbor_users) == 0:
+                if len(neighbor_users) == 0:  # check if neighbors' list is empty, too
                     similar_users = self.user.get_similar_users(
                         self.index, self.contiguous_to_custom, 11
                     )
 
                     if len(similar_users) == 0:
                         break
-                    self.status = StatusKind.COMMON
                 else:
                     neighbor_user = User(
                         neighbor_users[0],
-                        self.answers_pivot.loc[neighbor_users[0]]
+                        self.working_answers.loc[neighbor_users[0]]
                         .values.reshape(1, -1)
                         .astype(np.float32),
+                        self.participants.loc[neighbor_users[0]]["subscription_ids"],
                     )
 
                     similar_users = neighbor_user.get_similar_users(
                         self.index, self.contiguous_to_custom, 11
-                    )
-                    # self.working_graph.remove_edge(self.user.id, neighbor_users[0])
+                    )  # get similar users for the neighbor user
 
-                    del neighbor_users[0]
+                    self.user.checked.append(neighbor_users[0])
 
-                    if self.user.id in similar_users:
+                    if (
+                        self.user.id in similar_users
+                    ):  # we don't want to recommend the user itself, if it is in the similar users list of the neighbor user
                         idx = similar_users.index(self.user.id)
 
                         del similar_users[idx]
                     self.status = StatusKind.FRIEND
-            elif len(similar_users) == 0 and self.status == StatusKind.FRIEND:
+            elif (
+                len(similar_users) == 0 and self.status == StatusKind.FRIEND
+            ):  # check if similar users are empty for the neighbor user
                 similar_users = self.user.get_similar_users(
                     self.index, self.contiguous_to_custom, 11
                 )
                 self.status = StatusKind.COMMON
-            if self.user.is_blacklisted(similar_users[0]):
-                self.update_faiss_index()
-                similar_users = self.user.get_similar_users(
-                    self.index, self.contiguous_to_custom, 11
-                )
+            if self.user.is_blacklisted(
+                similar_users[0]
+            ):  # we don't want to recommend the rejected users
                 continue
-            if similar_users[0] in self.working_graph.get_neighbors(self.user.id):
+            if self.user.is_checked(
+                similar_users[0]
+            ):  # we don't want to recommend the already checked users
                 if len(similar_users) == 10 and all(
                     i in self.working_graph.get_neighbors(self.user.id)
                     for i in similar_users
@@ -126,6 +149,12 @@ class RecommendationSystem:
         self.restart_handler()
 
     def answer_handler(self, similar_users) -> None:
+        """Handles the user's answer to the recommendation.
+
+        Args:
+            :param similar_users: List of similar users
+
+        """
         while True:
             print(f"Do you want this user {similar_users[0]} to be your friend?")
             print(
@@ -141,6 +170,8 @@ class RecommendationSystem:
                     print(f"You have a new friend {similar_users[0]}")
                     print("----------------------------------------")
                     self.working_graph.add_edge(self.user.id, similar_users[0])
+                    self.user.checked.append(similar_users[0])
+
                     break
                 case "no":
                     print(f"You have no new friend")
@@ -152,31 +183,12 @@ class RecommendationSystem:
                     print("Invalid input. Use only yes or no.")
 
     def restart_handler(self) -> None:
+        """Handles the restart of the recommendation process."""
         print("No more users to recommend. I restart the recommendation process.")
 
         self.user.black_list = []
 
-        self.working_graph = Graph(self.participants)
-        self.create_faiss_index()
+        self.working_answers = self.answers_pivot
+        self.update_faiss_index()
+
         self.process_user_recommendations()
-
-
-def main():
-    participants_path = os.path.join("..", "..", "data", "participants.json")
-    answers_path = os.path.join("..", "..", "data", "answers.json")
-
-    with open(participants_path, "r") as f:
-        participants = pd.read_json(f)
-    with open(answers_path, "r") as f:
-        answers = pd.read_json(f)
-    data = Dataset(answers, participants)
-
-    user_id = int(input("Enter user id: "))
-
-    user = User(user_id, data.get_user_vector(user_id))
-    recommendation_system = RecommendationSystem(user, data)
-    recommendation_system.process_user_recommendations()
-
-
-if __name__ == "__main__":
-    main()
